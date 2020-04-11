@@ -21,14 +21,16 @@ public class ColorBar
   public TextField[] tfc = new TextField[2];
   
   public ColorBar() {
-    set();
+   set();
+
   }
   
   public ColorBar(double min, double max)
   {
     this.min = min;
     this.max = max;
-    set();
+  //  set();
+    setGammaBar();
   }
   
 
@@ -317,6 +319,34 @@ public class ColorBar
     }
   }
   
+  private void setGammaBar()
+  {
+    color = new Color[160];
+    int dg=256/80;
+    int green=0;
+    int red = 255;
+    int blue = 0;
+    for (int c = 0; c < 80; c++)
+    {
+    
+      green+= dg;
+      blue = green;
+      color[c] = new Color(red, green, blue);
+    }
+
+     blue = 255;
+     green=255;
+     red = 255;
+    for (int c = 80; c < color.length; c++)
+    {
+
+    	 green-= dg;
+         red = green;
+      color[c] = new Color(red, green, blue);
+    }
+    
+    
+  }
 
   private void set2()
   {
@@ -328,7 +358,7 @@ public class ColorBar
       float x = (float)(b - cx * b);
       float y = (float)(0.8D + i * 0.2D / color.length);
       float z = (float)(0.8D + i * 0.2D / color.length);
-      
+      y=1-x-z;
       color[i] = Color.getHSBColor(x, y, z);
     }
   }

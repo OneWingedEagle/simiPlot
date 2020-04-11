@@ -24,14 +24,15 @@ import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.Scanner;
 import javax.imageio.ImageIO;
-import javax.media.j3d.ImageComponent2D;
+///import javax.media.j3d.ImageComponent2D;
 import javax.rmi.CORBA.Util;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-import com.sun.j3d.utils.image.TextureLoader;
+//import com.sun.j3d.utils.image.TextureLoader;
 
 public class GUI extends javax.swing.JFrame implements java.awt.event.ActionListener, java.awt.event.MouseListener
 {
@@ -65,7 +66,9 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     if (s.startsWith("dist")) {
       mode = 1;
     }
-    System.out.println(s);
+    else if (s.startsWith("RSCU")) {
+        mode = 2;
+      }
     
     board = new Board2D();
     board.mode = mode;
@@ -76,12 +79,12 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
 
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     height = ((int)(0.9 * screenSize.height));
-    width = ((int)(0.7 * screenSize.width));
+    width = ((int)(0.98 * screenSize.width));
     setTitle(" Similiarity Plot");
     setPreferredSize(new Dimension(width, height));
-    setLocation(10, 10);
-    setDefaultCloseOperation(3);
-    
+    setLocation(0, 0);
+   /// setDefaultCloseOperation(3);
+	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     tbPanel = new JTabbedPane();
     tbPanel.setFont(new Font("Arial", 1, 12));
@@ -101,7 +104,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     bLines = new Button("Show Lines");
     bLines.addActionListener(this);
     
-    bFont = new Button("Label Font");
+    bFont = new Button("rowLabel Font");
     bFont.addActionListener(this);
     
 
@@ -151,26 +154,38 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       BufferedReader br = new BufferedReader(new FileReader(data));
       String tt = br.readLine();
       
+      tt = br.readLine();
+      String[] sp =tt.split(regex);
 
-      int I = Integer.parseInt(br.readLine());
+      numRows=Integer.parseInt(sp[0]);
+ 
+      if(mode==2)
+    	  numCols=Integer.parseInt(sp[1]);
+      else
+    	   numCols=numRows;
       
 
-      int J = I;
       
-      board.crn = new int[I][I][4];
-      vals = new double[I][I];
-      board.vals = new double[I][I];
-      board.label = new String[I];
-      
+      board.crn = new int[numRows][numCols][4];
+      vals = new double[numRows][numCols];
+      board.vals = new double[numRows][numCols];
+      board.rowLabel = new String[numRows];
+      board.colLabel = new String[numCols];
 
-      board.lbFont = new Font[I];
-      board.lbColor = new java.awt.Color[I];
-      for (int i = 0; i < I; i++) {
-        board.lbFont[i] = new Font("Arial", 1, 11);
+      board.rowlbFont = new Font[numRows];
+      board.rowlbColor = new java.awt.Color[numRows];
+      for (int i = 0; i < numRows; i++) {
+        board.rowlbFont[i] = new Font("Arial", 1, 11);
+      }
+      
+      board.collbFont = new Font[numCols];
+      board.collbColor = new java.awt.Color[numCols];
+      for (int i = 0; i < numCols; i++) {
+        board.collbFont[i] = new Font("Arial", 1, 11);
       }
       
       int[] crn0 = new int[4];
-      int dx0 = (int)(height * 0.65D / I);
+      int dx0 = (int)(height * 0.85D / numRows);
       int x0 = 200;
       x0Label = 200;
       y0Label = 50;
@@ -182,10 +197,10 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       int dx = (int)(1.0D * dx0);
       int dy = dx;
       dyLabel = dy;
-      for (int i = 0; i < I; i++) {
-        for (int j = 0; j < I; j++) {
-          board.crn[i][j][0] = (crn0[0] + i * dx);
-          board.crn[i][j][1] = (crn0[1] + j * dy);
+      for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+          board.crn[i][j][0] = (crn0[0] + j * dx);
+          board.crn[i][j][1] = (crn0[1] + i * dy);
           board.crn[i][j][2] = crn0[2];
           board.crn[i][j][3] = crn0[3];
         }
@@ -194,28 +209,53 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
 
 
       String line = "";
+  
+
       line = br.readLine();
-      
-      for (int i = 0; i < I; i++) {
-        line = br.readLine();
+
+      if(mode==2){
+      String[] sp1 = line.split(regex);
+      for (int j = 0; j < numCols; j++) {
         
-        String[] st = line.split(regex);
-        for (int j = i; j < I; j++) {
-          vals[i][j] = Double.parseDouble(st[j]);
+
+    	  board.colLabel[j] = sp1[j];
+     
         }
-        board.label[i] = st[(st.length - 1)];
+      }
+       
+      for (int i = 0; i < numRows; i++) {
+        line = br.readLine();
+
+        String[] st = line.split(regex);
+        /// System.out.println( line);
+
+        int j0=i;
+        if(mode==2) j0=0;
+        for (int j = j0; j < numCols; j++) {
+      //  	  System.out.println( j+"   "+st[j]);
+          vals[i][j] = Double.parseDouble(st[j]);
+     
+        }
+        board.rowLabel[i] = st[(st.length - 1)];
 
       }
       
 
+      if(mode!=2){
+      String[] sp1 = line.split(regex);
+      for (int j = 0; j < numCols; j++) {
+    	  board.colLabel[j] =    board.rowLabel[j];
+     
+        }
+      }
 
 
       if (mode == 0) {
-        for (int i = 0; i < I; i++) {
+        for (int i = 0; i <numRows; i++) {
          // vals[i][i] = 100.0D;
           vals[i][i] = 1.;
         }
-        for (int i = 0; i < I; i++) {
+        for (int i = 0; i < numRows; i++) {
           for (int j = 0; j < i; j++){
             vals[i][j] = board.vals[j][i];
           }
@@ -225,21 +265,25 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
 
       } else if (mode == 1)
       {
-        for (int i = 0; i < I; i++) {
+        for (int i = 0; i < numRows; i++) {
           for (int j = 0; j <= i; j++){
             vals[i][j] = board.vals[j][i];
+          ///  System.out.println(  board.vals[i][j]);
 
                  }
         }
 
       }
-      for (int i = 0; i < I; i++) {
-        for (int j = 0; j < I; j++) {
-         // System.out.print(vals[i][j] + " ");
 
+      
+      for (int i = 0; i < numRows; i++) {
+          for (int j = 0; j < numCols; j++)
+          {
+    //      	 System.out.println(i+" "+j+" ----   "+  vals[i][j]);
+
+          }
         }
-      //  System.out.println();
-      }
+
 
       br.close();
      
@@ -254,23 +298,82 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
   public void setBoardData()
   {
     double vmin = 1000000.0;double vmax = 0.0;
-    int I = vals.length;
-    for (int i = 0; i < I; i++) {
-      for (int j = i; j < I; j++) {
-        if (simi) {
+
+    if(mode==2){
+    	  for (int i = 0; i < numRows; i++) 
+    	      for (int j = 0; j < numCols; j++) 
+    	    	  board.vals[i][j] = vals[i][j];
+
+    }else
+    for (int i = 0; i < numRows; i++) {
+      for (int j = 0; j < numCols; j++) {
+
+        if (simi || j<=i+1000) {
           board.vals[i][j] = vals[i][j];
+        ///  System.out.println(i+" "+j+"  ---------  "+  vals[i][j]);
+
+        //  System.out.println(  board.vals[i][j]);
+
         } else {
           board.vals[i][j] = (1. - vals[i][j]);
         }
       }
     }
-    for (int i = 0; i < I; i++) {
-      for (int j = i; j < I; j++)
+    
+
+    for (int i = 0; i < numRows; i++) {
+      for (int j = 0; j < numCols; j++)
       {
         if (board.vals[i][j] > vmax) vmax = board.vals[i][j];
         if (board.vals[i][j] < vmin) vmin = board.vals[i][j];
+  
+
       }
     }
+
+    int div=100;
+    double[][] ranges=new double[div][2];
+    double dx=(vmax-vmin)/ranges.length;
+    for (int i = 0; i < div; i++){
+  	  ranges[i][0]=i*dx;
+  	 ranges[i][1]=(i+1)*dx;
+    }
+    int[]counts=new int[div];
+    
+    double[] vv=new double[numRows*numCols];
+    int kx=0;
+    for (int i = 0; i < numRows; i++) 
+        for (int j = 0; j < numCols; j++)
+        	vv[kx++]=vals[i][j];
+    
+	for(int k=0;k<vv.length;k++){
+		   
+	//	System.out.println(k+"  vv   "+  vv[k]);
+
+	}
+    
+    for (int i = 0; i < vv.length; i++) {
+    	double val= vv[i];
+        	for(int k=0;k<div;k++){
+        		if(val>=ranges[k][0] && val<=ranges[k][1]){
+        			counts[k]++;
+        			break;
+        		}
+        	}
+       // 	 System.out.println(i+" "+j+" ----   "+  vals[i][j]);
+
+        }
+
+    int totals=0;
+	for(int k=0;k<div;k++)
+		totals+= counts[k];
+//	System.out.println(numRows*numCols+"  --totals --   "+  totals);
+   double[]density=new double[div];
+	for(int k=0;k<div;k++){
+		density[k]= 	 counts[k]*1./totals;	   
+		System.out.println((ranges[k][0]+ranges[k][1])/2+"   "+  density[k]);
+
+	}
 
 
     board.cb = new graphic.ColorBar(vmin, vmax);
@@ -285,9 +388,12 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
         board.title = " Difference Plot ";
       }
     }
-    else {
+    else  if (mode == 1){
       board.title = " Distance Plot ( nucletoid) ";
     }
+    else  if (mode == 2){
+        board.title = "       RSCU Plot ";
+      }
   }
   
   public void actionPerformed(ActionEvent e) {
@@ -302,17 +408,17 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     }
     else if (e.getSource() == bFont) {
       Frame f = new Frame();
-      fch = new FontChooser(f, board.label);
+      fch = new FontChooser(f, board.rowLabel);
       fch.setVisible(true);
       int k = fch.labelChooser.getSelectedIndex();
       if (k > 0) {
-        board.lbFont[(k - 1)] = fch.newFont;
-        board.lbColor[(k - 1)] = fch.newColor;
+        board.rowlbFont[(k - 1)] = fch.newFont;
+        board.rowlbColor[(k - 1)] = fch.newColor;
       }
       else {
-        for (int p = 0; p < board.lbFont.length; p++) {
-          board.lbFont[p] = fch.newFont;
-          board.lbColor[p] = fch.newColor;
+        for (int p = 0; p < board.rowlbFont.length; p++) {
+          board.rowlbFont[p] = fch.newFont;
+          board.rowlbColor[p] = fch.newColor;
         } }
       board.repaint();
       fch.dispose();
@@ -337,15 +443,15 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       pr(selectedLabel);
       
       Frame f = new Frame();
-      fch = new FontChooser(f, board.label);
+      fch = new FontChooser(f, board.rowLabel);
       
       int k = 1 + selectedLabel;
       
       fch.labelChooser.setSelectedIndex(k);
       
       fch.setVisible(true);
-      board.lbFont[(k - 1)] = fch.newFont;
-      board.lbColor[(k - 1)] = fch.newColor;
+      board.rowlbFont[(k - 1)] = fch.newFont;
+      board.rowlbColor[(k - 1)] = fch.newColor;
       
       board.repaint();
       fch.dispose();
@@ -367,6 +473,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
   public int selectedLabel;
   public int mode;
   public Board2D board;
+  public int numRows,numCols;
   private int width;
   private int height;
   public void mouseEntered(MouseEvent me) {}
