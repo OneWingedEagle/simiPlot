@@ -50,6 +50,12 @@ public java.awt.Image img;
     int I = crn.length;
     int J = crn[0].length;
 
+    double drange=cb.getEnds()[1]-cb.getEnds()[0];
+  //  System.out.println("   "+  drange);
+    int nCounts=40;
+    int[] counts=new int[nCounts];
+    double interval=drange/nCounts;
+    
     for (int i = 0; i < I; i++) {
     	int j0=i;
     	if(mode==2) 
@@ -58,6 +64,12 @@ public java.awt.Image img;
       // System.out.println(i+" "+j+"    "+  vals[i][j]);
 
     	  double val=vals[i][j];
+    	  for(int k=0;k<nCounts;k++){
+    		  if(val>=k*interval && val<=(k+1)*interval){
+    		  counts[k]++;
+    		  break;
+    		  }
+    	  }
     	  
     	//  double max=cb.getEnds()[1];
     	 // val=max-val;
@@ -130,7 +142,7 @@ public java.awt.Image img;
     DecimalFormat df = new DecimalFormat("0.0");
     
 
-    double drange=cb.getEnds()[1]-cb.getEnds()[0];
+   // double drange=cb.getEnds()[1]-cb.getEnds()[0];
     int numberInts=(int)(drange)+1;
  
     int numberLevel=Math.min(numberInts,10);
@@ -166,6 +178,34 @@ public java.awt.Image img;
     	lable_y[i]=	ycb+(int)(dens_vals[i]*Hd);
        // System.out.println(" lable_y[i]    "+  lable_y[i]);
     }
+    
+    
+    int dx=Wd/nCounts;
+    
+    int sumCounts=0;
+    for (int i = 0; i < counts.length; i ++)
+    	sumCounts+=counts[i];
+
+    double [] dens=new double[nCounts];
+    for (int i = 0; i < counts.length; i ++)
+    	dens[i]=(counts[i]/sumCounts/interval);
+    
+    int x1=xcb+(int)(i*dx);
+    int x2=xcb+(int)((1+1)*dx);
+    int y1=
+   ///	g2d.drawString(".", xcb+(int)((i+.5)*dx), yden);
+    g2d.drawLine(xcb+(int)((i+.5)*dx), yden, xcb-2, lable_y[i]);
+       System.out.println(" counts[i]    "+ (counts[i]*1.0/sumCounts/interval));
+    }
+    
+    for (int i = 0; i < counts.length; i ++)
+    {
+    	int yden=	ycb+Hd-(int)(counts[i]*Hd/sumCounts/interval);
+   ///	g2d.drawString(".", xcb+(int)((i+.5)*dx), yden);
+    g2d.drawLine(xcb+(int)((i+.5)*dx), yden, xcb-2, lable_y[i]);
+       System.out.println(" counts[i]    "+ (counts[i]*1.0/sumCounts/interval));
+    }
+    
     
     for (int i = 0; i < densityLevel; i++) {
         int dd = 40;

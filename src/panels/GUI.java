@@ -371,7 +371,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
    double[]density=new double[div];
 	for(int k=0;k<div;k++){
 		density[k]= 	 counts[k]*1./totals;	   
-		System.out.println((ranges[k][0]+ranges[k][1])/2+"   "+  density[k]);
+	//	System.out.println((ranges[k][0]+ranges[k][1])/2+"   "+  density[k]);
 
 	}
 
