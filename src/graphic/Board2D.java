@@ -20,7 +20,7 @@ public java.awt.Image img;
   public double[][] vals;
   public String[] rowLabel;
   public String[] colLabel;
-  public ColorBar cb;
+  public ColorBar cb,cb_below1,cb_above1;
   public boolean showLines = true;
   public String title = " Similarity Plot ";
   
@@ -56,6 +56,10 @@ public java.awt.Image img;
     int[] counts=new int[nCounts];
     double interval=drange/nCounts;
     
+    double cmin= cb.getEnds()[0];
+    double cmax= cb.getEnds()[1];
+    double c_mean=(cmin + cmax)/2;
+    
     for (int i = 0; i < I; i++) {
     	int j0=i;
     	if(mode==2) 
@@ -71,17 +75,22 @@ public java.awt.Image img;
     		  }
     	  }
     	  
-    	//  double max=cb.getEnds()[1];
-    	 // val=max-val;
-    	  
-        Color color = cb.getColor(val);
-       // color.brighter().brighter();
-        
-        int rx = (int)(color.getRed() * a);
-        int gx = (int)(color.getGreen() * a);
-        
-        int bx = (int)(color.getBlue() * a);
-        
+    		Color color=null;
+
+        	double f=1;
+        	if(val>=1){
+        		f=1-Math.pow((val-1)/(cmax-1),4);
+        		color=this.cb_above1.getColor(val);
+        	}
+        	else{
+        		color=this.cb_below1.getColor(val);
+        	}
+
+
+          int rx = (int)(color.getRed() *a*f);
+          int gx = (int)(color.getGreen() * a*f);
+          int bx = (int)(color.getBlue() * a*f);
+   
         color = new Color(rx, gx, bx);
  
         g2d.setColor(color);
@@ -89,26 +98,26 @@ public java.awt.Image img;
       }
     }
     int Ld = 5;
-    int Lc = Ld * 10;
+    int Lc = Ld * 20;
     cbn = new int[Lc][4];
     
-    int dc =(int)(crn[0][0][2] * I * 0.4 / Lc);
+    int dc =(int)(crn[0][0][2] * I * 0.35 / Lc);
   
     int x0=40;
     int y0=40;
     if(mode==2){
     	x0+=100;
-    	//y0+=100;
+    	y0+=100;
     }
- 
+    int Hd=200;
     int xcb=crn[(I - 1)][(J- 1)][0]+x0;
-    int ycb=crn[(I / 2)][(J / 2)][1];
+    int ycb=crn[(I / 2)][(J / 2)][1]+y0;
     // vertical bar
     for (int i = 0; i < Lc; i++) {
         cbn[i][0] =xcb+dc * i;
         cbn[i][1] =ycb;
         cbn[i][2] = dc;
-        cbn[i][3] = 300;
+        cbn[i][3] = Hd;
       }
 
     
@@ -122,13 +131,30 @@ public java.awt.Image img;
     
    
  ////// g2d.rotate(Math.PI/2, xcb+300/2, ycb+dc/2);
+   // double cb_mean=(cb.getEnds()[1] + cb.getEnds()[0])/2;
+    
+
+    
+   
     for (int i = 0; i < Lc; i++) {
-      Color color = cb.getColor(cb.getEnds()[0] + (cb.getEnds()[1] - cb.getEnds()[0]) * i * 1.0D / (Lc - 1));
- 
-      
-      int rx = (int)(color.getRed() * a);
-      int gx = (int)(color.getGreen() * a);
-      int bx = (int)(color.getBlue() * a);
+    	
+    	double    val=cmin + drange * i * 1.0 / (Lc - 1);
+     
+    	Color color=null;
+
+    	double f=1;
+    	if(val>=1){
+    		f=1-Math.pow((val-1)/(cmax-1),4);
+    		color=this.cb_above1.getColor(val);
+    	}
+    	else{
+    		color=this.cb_below1.getColor(val);
+    	}
+
+
+      int rx = (int)(color.getRed() *a*f);
+      int gx = (int)(color.getGreen() * a*f);
+      int bx = (int)(color.getBlue() * a*f);
       color = new Color(rx, gx, bx);
       
       g2d.setColor(color);
@@ -170,7 +196,7 @@ public java.awt.Image img;
     double[] dens_vals=new double[densityLevel];
     double dval=1./(densityLevel-1);
     int[] lable_y=new int[densityLevel];
-    int Hd=300;
+
  //   System.out.println(" Wd    "+ Wd);
     for (int i = 0; i < densityLevel; i ++)
     {
@@ -190,20 +216,20 @@ public java.awt.Image img;
     for (int i = 0; i < counts.length; i ++)
     	dens[i]=(counts[i]/sumCounts/interval);
     
-    int x1=xcb+(int)(i*dx);
-    int x2=xcb+(int)((1+1)*dx);
-    int y1=
+  //  int x1=xcb+(int)(i*dx);
+  //  int x2=xcb+(int)((1+1)*dx);
+
    ///	g2d.drawString(".", xcb+(int)((i+.5)*dx), yden);
-    g2d.drawLine(xcb+(int)((i+.5)*dx), yden, xcb-2, lable_y[i]);
-       System.out.println(" counts[i]    "+ (counts[i]*1.0/sumCounts/interval));
-    }
+  //  g2d.drawLine(xcb+(int)((i+.5)*dx), yden, xcb-2, lable_y[i]);
+   //    System.out.println(" counts[i]    "+ (counts[i]*1.0/sumCounts/interval));
+ //   }
     
     for (int i = 0; i < counts.length; i ++)
     {
     	int yden=	ycb+Hd-(int)(counts[i]*Hd/sumCounts/interval);
    ///	g2d.drawString(".", xcb+(int)((i+.5)*dx), yden);
-    g2d.drawLine(xcb+(int)((i+.5)*dx), yden, xcb-2, lable_y[i]);
-       System.out.println(" counts[i]    "+ (counts[i]*1.0/sumCounts/interval));
+  //  g2d.drawLine(xcb+(int)((i+.5)*dx), yden, xcb-2, lable_y[i]);
+   //    System.out.println(" counts[i]    "+ (counts[i]*1.0/sumCounts/interval));
     }
     
     

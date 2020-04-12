@@ -79,7 +79,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
 
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     height = ((int)(0.9 * screenSize.height));
-    width = ((int)(0.98 * screenSize.width));
+    width = ((int)(0.9 * screenSize.width));
     setTitle(" Similiarity Plot");
     setPreferredSize(new Dimension(width, height));
     setLocation(0, 0);
@@ -377,8 +377,9 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
 
 
     board.cb = new graphic.ColorBar(vmin, vmax);
+    board.cb_below1 = new graphic.ColorBar(vmin, 2.-vmin);
+    board.cb_above1 = new graphic.ColorBar( 2-vmax,vmax);
     
-
     if (mode == 0) {
       if (simi) {
     //    board.title = " Similarity Plot ( % ) ";
