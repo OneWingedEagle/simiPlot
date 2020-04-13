@@ -1,5 +1,6 @@
 package graphic;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -22,6 +23,7 @@ public java.awt.Image img;
   public String[] colLabel;
   public ColorBar cb,cb_below1,cb_above1;
   public boolean showLines = true;
+  public boolean showCurve= true;
   public String title = " Similarity Plot ";
   
   public Font[] rowlbFont,collbFont;
@@ -52,7 +54,7 @@ public java.awt.Image img;
 
     double drange=cb.getEnds()[1]-cb.getEnds()[0];
   //  System.out.println("   "+  drange);
-    int nCounts=40;
+    int nCounts=I*J/50;
     int[] counts=new int[nCounts];
     double interval=drange/nCounts;
     
@@ -192,53 +194,61 @@ public java.awt.Image img;
        g2d.drawString(df.format(val), lable_x[i]-dd, cbn[i][1] + cbn[i][3]+40);
       }
     
+    int sumCounts=0;
+    for (int i = 0; i < nCounts; i ++)
+    	sumCounts+=counts[i];
+    double[] dens_distrib=new double[nCounts];
+    
+    double max_den=0;
+    for (int i = 0; i < nCounts; i ++){
+    	dens_distrib[i]=counts[i]*1.0/sumCounts/interval;
+   // 	System.out.println(" dens_distrib[i]    "+i+"    "+ (dens_distrib[i]));
+    	if(dens_distrib[i]>max_den) max_den=dens_distrib[i];
+    }
+    ///System.out.println(" counts[i]    "+ (counts[i]*1.0/sumCounts/interval));
+    
     int densityLevel=6;
     double[] dens_vals=new double[densityLevel];
-    double dval=1./(densityLevel-1);
+    double dlevel=max_den/(densityLevel-1);
     int[] lable_y=new int[densityLevel];
 
  //   System.out.println(" Wd    "+ Wd);
     for (int i = 0; i < densityLevel; i ++)
     {
-    	dens_vals[i]=i*dval;
-    	lable_y[i]=	ycb+(int)(dens_vals[i]*Hd);
+    	dens_vals[i]=i*dlevel;
+    	lable_y[i]=	ycb+(int)(i*1./(densityLevel-1)*Hd);
        // System.out.println(" lable_y[i]    "+  lable_y[i]);
     }
     
     
     int dx=Wd/nCounts;
     
-    int sumCounts=0;
-    for (int i = 0; i < counts.length; i ++)
-    	sumCounts+=counts[i];
+
 
     double [] dens=new double[nCounts];
     for (int i = 0; i < counts.length; i ++)
     	dens[i]=(counts[i]/sumCounts/interval);
     
-  //  int x1=xcb+(int)(i*dx);
-  //  int x2=xcb+(int)((1+1)*dx);
 
-   ///	g2d.drawString(".", xcb+(int)((i+.5)*dx), yden);
-  //  g2d.drawLine(xcb+(int)((i+.5)*dx), yden, xcb-2, lable_y[i]);
-   //    System.out.println(" counts[i]    "+ (counts[i]*1.0/sumCounts/interval));
- //   }
+    if (showCurve) {
+    g2d.setColor(Color.CYAN);
+    g2d.setStroke(new BasicStroke(2));
     
-    for (int i = 0; i < counts.length; i ++)
+    for (int i = 0; i < counts.length-1; i ++)
     {
-    	int yden=	ycb+Hd-(int)(counts[i]*Hd/sumCounts/interval);
-   ///	g2d.drawString(".", xcb+(int)((i+.5)*dx), yden);
-  //  g2d.drawLine(xcb+(int)((i+.5)*dx), yden, xcb-2, lable_y[i]);
-   //    System.out.println(" counts[i]    "+ (counts[i]*1.0/sumCounts/interval));
+    	int yy1=	ycb+Hd-(int)(dens_distrib[i]/max_den*Hd);
+    	int yy2=	ycb+Hd-(int)(dens_distrib[i+1]/max_den*Hd);
+    	g2d.drawLine(xcb+(int)((i)*dx), yy1, xcb+(int)((i+1)*dx), yy2);
     }
     
+    g2d.setColor(Color.black);
+    g2d.setStroke(new BasicStroke(1)); 
+    }
     
     for (int i = 0; i < densityLevel; i++) {
         int dd = 40;
         double val = dens_vals[densityLevel-1-i];
-     /*   if (val < 10.0) { dd += 2;
-        } else if (val < 100.0) { dd -= 2;
-        }*/
+
        g2d.drawLine(xcb-10, lable_y[i], xcb-2, lable_y[i]);
        g2d.drawString(df.format(val), xcb-dd, lable_y[i]);
       }

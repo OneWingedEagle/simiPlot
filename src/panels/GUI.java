@@ -103,6 +103,8 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
 
     bLines = new Button("Show Lines");
     bLines.addActionListener(this);
+    bCurve = new Button("Show Curve");
+    bCurve.addActionListener(this);
     
     bFont = new Button("rowLabel Font");
     bFont.addActionListener(this);
@@ -124,6 +126,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     
     panel.add(bSimi);
     panel.add(bLines);
+    panel.add(bCurve);
     panel.add(bFont);
     Panel pc = new Panel(new GridLayout(1, 3, 5, 5));
     pc.add(new Label());
@@ -407,6 +410,10 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       board.showLines = (!board.showLines);
       board.repaint();
     }
+    else if (e.getSource() == bCurve) {
+        board.showCurve = (!board.showCurve);
+        board.repaint();
+      }
     else if (e.getSource() == bFont) {
       Frame f = new Frame();
       fch = new FontChooser(f, board.rowLabel);
@@ -430,7 +437,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       takeShot();
     } }
   
-  public Button bLines;
+  public Button bLines,bCurve;
   public Button bFont;
   public ButtonIcon bShot;
   public FontChooser fch;
