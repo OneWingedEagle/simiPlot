@@ -26,11 +26,14 @@ import java.util.Scanner;
 import javax.imageio.ImageIO;
 ///import javax.media.j3d.ImageComponent2D;
 import javax.rmi.CORBA.Util;
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 
 //import com.sun.j3d.utils.image.TextureLoader;
 
@@ -47,7 +50,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
   public JTabbedPane tbPanel = new JTabbedPane();
   public TextField tfInputFile;
   public TextField tfOutPutFile;
-  
+  public JScrollPane scrollPane;
   public GUI()
   {
     mode = 0;
@@ -86,8 +89,23 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
    /// setDefaultCloseOperation(3);
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+	
     tbPanel = new JTabbedPane();
     tbPanel.setFont(new Font("Arial", 1, 12));
+ 
+    
+/*	scrollPane = new JScrollPane(board,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+			ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+	scrollPane.setPreferredSize(new Dimension(500, 5));
+	scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 15, 15,10));
+	
+	tbPanel.add("Plot",scrollPane);*/
+    
+   // JFrame frm = new JFrame(" Analysis Progress");
+  //  frm.setLocation(50, 550);
+  //  frm.setPreferredSize(new Dimension(600, 400));
+   // frm.add(this.messageScrollPane);
+	
     tbPanel.addTab("Plot", board);
     
     getContentPane().add(tbPanel, "Center");
@@ -105,6 +123,12 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     bLines.addActionListener(this);
     bCurve = new Button("Show Curve");
     bCurve.addActionListener(this);
+    
+    bLables = new Button("Show Lables");
+    bLables.addActionListener(this);
+    
+    bPlot = new Button("Show Plot");
+    bPlot.addActionListener(this);
     
     bFont = new Button("rowLabel Font");
     bFont.addActionListener(this);
@@ -125,6 +149,8 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     }
     
     panel.add(bSimi);
+    panel.add(bPlot);
+    panel.add(bLables);
     panel.add(bLines);
     panel.add(bCurve);
     panel.add(bFont);
@@ -188,12 +214,11 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       }
       
       int[] crn0 = new int[4];
-      int dx0 = (int)(height * 0.85D / numRows);
+      int dx0 = (int)(height * 2*0.85D / numRows);
       int x0 = 200;
       x0Label = 200;
       y0Label = 50;
       crn0[0] = x0;
-      crn0[1] = y0Label;
       crn0[2] = dx0;
       crn0[3] = dx0;
       
@@ -231,7 +256,6 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
 
         String[] st = line.split(regex);
         /// System.out.println( line);
-
         int j0=i;
         if(mode==2) j0=0;
         for (int j = j0; j < numCols; j++) {
@@ -406,10 +430,20 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       setBoardData();
       board.repaint();
     }
+    else if (e.getSource() == bPlot) {
+        board.showPlot = (!board.showPlot);
+      //  if(!board.showPlot)  board.showLables=false;
+        board.repaint();
+      }
     else if (e.getSource() == bLines) {
       board.showLines = (!board.showLines);
       board.repaint();
     }
+    else if (e.getSource() == bLables) {
+        board.showLables = (!board.showLables);
+        if(!board.showLables)  board.showLines=false;
+        board.repaint();
+      }
     else if (e.getSource() == bCurve) {
         board.showCurve = (!board.showCurve);
         board.repaint();
@@ -437,7 +471,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       takeShot();
     } }
   
-  public Button bLines,bCurve;
+  public Button bLines,bCurve,bLables,bPlot;
   public Button bFont;
   public ButtonIcon bShot;
   public FontChooser fch;
