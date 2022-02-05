@@ -25,7 +25,7 @@ public java.awt.Image img;
   public boolean showPlot = true;
   public boolean showLables = true;
   public boolean showLines = true;
-  public boolean showCurve= true;
+  public boolean showCurve= true,showColorBar=true;
   public String title = " Similarity Plot ";
   
   public Font[] rowlbFont,collbFont;
@@ -239,6 +239,7 @@ public java.awt.Image img;
        color = new Color(rx, gx, bx);
        
        g2d.setColor(color);
+       if(showColorBar)
        g2d.fillRect(cbn[i][0], cbn[i][1], cbn[i][2], cbn[i][3]);
      }
      
@@ -258,15 +259,7 @@ public java.awt.Image img;
      	lable_x[i]=	xcb+(int)((vals[i]-cb.getEnds()[0])*Wd/drange);
       //   System.out.println(" lable_x[i]    "+  lable_x[i]);
      }
-     for (int i = 0; i < numberLevel; i++) {
-         int dd = 0;
-         double val = vals[i];
-         if (val < 10.0) { dd += 2;
-         } else if (val < 100.0) { dd -= 2;
-         }
-        g2d.drawLine(lable_x[i], cbn[i][1] + cbn[i][3]+10, lable_x[i], cbn[i][1] + cbn[i][3]);
-        g2d.drawString(df.format(val), lable_x[i]-dd, cbn[i][1] + cbn[i][3]+40);
-       }
+
      
      int sumCounts=0;
      for (int i = 0; i < nCounts; i ++)
@@ -295,8 +288,8 @@ public java.awt.Image img;
      }
      
      
-     int dx=Wd/nCounts;
-     
+     double dx=Wd*1.0/nCounts;
+         
 
 
      double [] dens=new double[nCounts];
@@ -304,8 +297,7 @@ public java.awt.Image img;
      	dens[i]=(counts[i]/sumCounts/interval);
      //******************************* initial rotate
    //  g2d.translate(0, crn[I-1][0][1]+200);
-   
-    
+
 
      if (showCurve) {
      g2d.setColor(Color.CYAN);
@@ -321,7 +313,18 @@ public java.awt.Image img;
      g2d.setColor(Color.black);
      g2d.setStroke(new BasicStroke(1)); 
      }
-     
+     if(showColorBar){
+    	 
+     for (int i = 0; i < numberLevel; i++) {
+         int dd = 0;
+         double val = vals[i];
+         if (val < 10.0) { dd += 2;
+         } else if (val < 100.0) { dd -= 2;
+         }
+        g2d.drawLine(lable_x[i], cbn[i][1] + cbn[i][3]+10, lable_x[i], cbn[i][1] + cbn[i][3]);
+        g2d.drawString(df.format(val), lable_x[i]-dd, cbn[i][1] + cbn[i][3]+40);
+       }
+         
      for (int i = 0; i < densityLevel; i++) {
          int dd = 40;
          double val = dens_vals[densityLevel-1-i];
@@ -342,6 +345,7 @@ public java.awt.Image img;
        g2d.drawString(" ", cbn[(Lc - 1)][0] - 8, cbn[(Lc - 1)][1] - 10);
      } else if (mode == 1) {
        g2d.drawString(" ( nuc. ) ", cbn[(Lc - 1)][0] - 8, cbn[(Lc - 1)][1] - 10);
+     }
      }
      
    ////g2d.rotate(-Math.PI/2, xcb+300/2, ycb+dc/2);

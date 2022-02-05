@@ -123,6 +123,8 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     bLines.addActionListener(this);
     bCurve = new Button("Show Curve");
     bCurve.addActionListener(this);
+    bcBar = new Button("Show ColorBar");
+    bcBar.addActionListener(this);
     
     bLables = new Button("Show Lables");
     bLables.addActionListener(this);
@@ -153,6 +155,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     panel.add(bLables);
     panel.add(bLines);
     panel.add(bCurve);
+    panel.add(bcBar);
     panel.add(bFont);
     Panel pc = new Panel(new GridLayout(1, 3, 5, 5));
     pc.add(new Label());
@@ -263,8 +266,14 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
           vals[i][j] = Double.parseDouble(st[j]);
      
         }
-        board.rowLabel[i] = st[(st.length - 1)];
+        String name="";
+        try{
+        	double vv=Double.parseDouble(st[(st.length - 1)]);
+        }catch(NumberFormatException e){
+        	name=board.rowLabel[i] = st[(st.length - 1)];
 
+      }
+        board.rowLabel[i] =  name;
       }
       
 
@@ -448,6 +457,11 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
         board.showCurve = (!board.showCurve);
         board.repaint();
       }
+    else if (e.getSource() == bcBar) {
+        board.showColorBar = (!board.showColorBar);
+        board.showCurve = board.showColorBar ;
+        board.repaint();
+      }
     else if (e.getSource() == bFont) {
       Frame f = new Frame();
       fch = new FontChooser(f, board.rowLabel);
@@ -471,7 +485,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       takeShot();
     } }
   
-  public Button bLines,bCurve,bLables,bPlot;
+  public Button bLines,bCurve,bLables,bPlot,bcBar;
   public Button bFont;
   public ButtonIcon bShot;
   public FontChooser fch;
