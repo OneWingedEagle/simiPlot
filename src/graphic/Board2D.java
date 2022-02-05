@@ -29,6 +29,7 @@ public java.awt.Image img;
   public boolean showCurve= true,showColorBar=true;
   public String title = " Similarity Plot ";
   public int yuser=0;
+  public double scale=1.0;
 
   public Font[] rowlbFont,collbFont;
   
@@ -58,7 +59,7 @@ public java.awt.Image img;
 
     double drange=cb.getEnds()[1]-cb.getEnds()[0];
   //  System.out.println("   "+  drange);
-    int nCounts=I*J/50;
+    int nCounts=I*J/100;
     int[] counts=new int[nCounts];
     double interval=drange/nCounts;
     
@@ -156,7 +157,7 @@ public java.awt.Image img;
       }
     }
 
-    int dy=crn[0][0][3];
+    int dy=crn[0][0][2];
     int xc0=crn[0][0][0]+dy;
     int yc0=crn[I-1][0][1] + crn[I-1][0][3]+3*dy;
 

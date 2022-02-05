@@ -43,11 +43,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
   public JTextArea progressArea = new JTextArea(); public JTextArea paramArea = new JTextArea();
   
 
-
-
   public boolean simi = true;
-  
-
   public JTabbedPane tbPanel = new JTabbedPane();
   public TextField tfInputFile;
   public TextField tfOutPutFile;
@@ -133,6 +129,8 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     bPlot = new Button("Show Plot");
     bPlot.addActionListener(this);
     
+    tfScale=new TextField("1.0");
+    
     bFont = new Button("rowLabel Font");
     bFont.addActionListener(this);
     
@@ -154,6 +152,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     
     panel.add(bSimi);
     panel.add(bPlot);
+    panel.add(tfScale);
     panel.add(bLables);
     panel.add(bLines);
     panel.add(bCurve);
@@ -218,29 +217,8 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
       for (int i = 0; i < numCols; i++) {
         board.collbFont[i] = new Font("Arial", 1, 11);
       }
-      
-      int[] crn0 = new int[4];
-      int dx0 = (int)(height * 2*0.85D / numRows);
-      int x0 = 200;
-      x0Label = 200;
-      y0Label = 50;
-      crn0[0] = x0;
-      crn0[2] = dx0;
-      crn0[3] = dx0;
-      
-      int dx = (int)(1.0D * dx0);
-      int dy = dx;
-      dyLabel = dy;
-      for (int i = 0; i < numRows; i++) {
-        for (int j = 0; j < numCols; j++) {
-          board.crn[i][j][0] = (crn0[0] + j * dx);
-          board.crn[i][j][1] = (crn0[1] + i * dy);
-          board.crn[i][j][2] = crn0[2];
-          board.crn[i][j][3] = crn0[3];
-        }
-      }
 
-
+      setCellCoords();
 
       String line = "";
   
@@ -332,6 +310,26 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     {
       System.out.println("loading data file failed.");System.exit(0);
     }
+  }
+  
+  public void setCellCoords(){
+	  
+	  int dy0 = (int)(height * board.scale*0.75D / numCols);
+	  int dx0 =(int)(width * board.scale*0.95D /numRows);
+      int x0 = 250;
+      x0Label = x0;
+      y0Label = 50;   
+
+      dyLabel = dy0;
+      
+      for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+          board.crn[i][j][0] = (x0 + j * dy0);
+          board.crn[i][j][1] = (0 + i * dx0);
+          board.crn[i][j][2] = dy0;
+          board.crn[i][j][3] = dx0;
+        }
+      }
   }
   
   public void setBoardData()
@@ -445,6 +443,11 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     else if (e.getSource() == bPlot) {
         board.showPlot = (!board.showPlot);
       //  if(!board.showPlot)  board.showLables=false;
+      if( board.showPlot){
+        	board.scale =Double.parseDouble(tfScale.getText());
+        	 setCellCoords();
+      }
+
         board.repaint();
       }
     else if (e.getSource() == bLines) {
@@ -490,7 +493,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     } }
   
   public Button bLines,bCurve,bLables,bPlot,bcBar;
-  public  TextField tfYuser;
+  public  TextField tfYuser,tfScale;
   public Button bFont;
   public ButtonIcon bShot;
   public FontChooser fch;
