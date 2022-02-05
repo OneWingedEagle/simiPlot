@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
 //import com.sun.j3d.utils.image.TextureLoader;
@@ -135,7 +136,8 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     bFont = new Button("rowLabel Font");
     bFont.addActionListener(this);
     
-
+    tfYuser=new TextField("0");
+    
     bShot = new ButtonIcon();
 
     bShot.setPreferredSize(new Dimension(30, 30));
@@ -156,6 +158,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     panel.add(bLines);
     panel.add(bCurve);
     panel.add(bcBar);
+    panel.add(tfYuser);
     panel.add(bFont);
     Panel pc = new Panel(new GridLayout(1, 3, 5, 5));
     pc.add(new Label());
@@ -460,6 +463,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     else if (e.getSource() == bcBar) {
         board.showColorBar = (!board.showColorBar);
         board.showCurve = board.showColorBar ;
+        if( board.showColorBar) board.yuser=Integer.parseInt(tfYuser.getText());
         board.repaint();
       }
     else if (e.getSource() == bFont) {
@@ -486,6 +490,7 @@ public class GUI extends javax.swing.JFrame implements java.awt.event.ActionList
     } }
   
   public Button bLines,bCurve,bLables,bPlot,bcBar;
+  public  TextField tfYuser;
   public Button bFont;
   public ButtonIcon bShot;
   public FontChooser fch;

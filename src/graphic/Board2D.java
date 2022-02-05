@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.text.DecimalFormat;
 import javax.swing.JPanel;
 
+
 public class Board2D extends JPanel
 {
   /**
@@ -27,7 +28,8 @@ public java.awt.Image img;
   public boolean showLines = true;
   public boolean showCurve= true,showColorBar=true;
   public String title = " Similarity Plot ";
-  
+  public int yuser=0;
+
   public Font[] rowlbFont,collbFont;
   
   public Color[] rowlbColor,collbColor;
@@ -207,7 +209,7 @@ public java.awt.Image img;
     }
     int Hd=Lc*dc;
     int xcb=crn[(I - 1)][(J- 1)][0]+x0;
-    int ycb=crn[(I / 2)][(J / 2)][1]+y0;
+    int ycb=crn[(I / 2)][(J / 2)][1]+y0+yuser;
     // vertical bar
     for (int i = 0; i < Lc; i++) {
         cbn[i][0] =xcb+dc * i;
